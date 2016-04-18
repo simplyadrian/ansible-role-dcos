@@ -13,3 +13,4 @@ admin_location: "" # Optional: Specify the IP range to whitelist for access to t
 region: us-west-2
 private_subnet: {}
 public_subnet: {}
+cfn_template_url: "https://s3.amazonaws.com/{{ cfn_template_bucket }}/{{ environ }}/{{dcos_tpl}}"
