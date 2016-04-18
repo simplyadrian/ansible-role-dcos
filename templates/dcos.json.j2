@@ -83,7 +83,7 @@
             "Ref": "PublicSlaveSecurityGroup"
           }
         ],
-        "InstanceType": "{{ public_slave_instance_type |default(m3.xlarge) }}",
+        "InstanceType": "{{ public_slave_instance_type |default('m3.xlarge') }}",
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -436,7 +436,7 @@
             "Ref": "SlaveSecurityGroup"
           }
         ],
-        "InstanceType": "{{ slave_instance_type |default(m3.xlarge) }}",
+        "InstanceType": "{{ slave_instance_type |default('m3.xlarge') }}",
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -758,7 +758,7 @@
             "Ref": "AdminSecurityGroup"
           }
         ],
-        "InstanceType": "{{ master_instance_type |default(m3.xlarge) }}",
+        "InstanceType": "{{ master_instance_type |default('m3.xlarge') }}",
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
