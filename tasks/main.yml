@@ -1,0 +1,4 @@
+---
+# tasks file for ansible-role-dcos
+- include: build.yml
+  tags: ['build']

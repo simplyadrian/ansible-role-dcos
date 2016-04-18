@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  vars:
+    aws_key: "{{lookup('env','AWS_SECRET_ACCESS_KEY')}}"
+    aws_key_id: "{{lookup('env','AWS_ACCESS_KEY_ID')}}"
+    docker_tags: "{{lookup('env', 'DOCKER_TAGS')|default('my_test', true)}}"
+  tasks:
+    - name: create dockerfile
+      template: src=Dockerfile.j2 dest=./Dockerfile 
+
+    - name: run tests
+      shell: "docker build -t {{docker_tags}} ." 

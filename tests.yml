@@ -1,0 +1,18 @@
+---
+- hosts: test
+  vars:
+   admin_location: 0.0.0.0/0
+   slave_instance_type: "m3.xlarge"
+   public_slave_instance_type: "m3.xlarge"
+   master_instance_type: "m3.xlarge"
+   stack_creation_timeout: "PT45M"
+   master_instance_count: 3
+   public_slave_instance_count: 1
+   slave_instance_count: 5
+   region: us-west-2
+   key_name: dev-mgage-dcos
+   private_subnet: subnet-2d29365a
+   public_subnet: subnet-2e293659
+   vpc_id: vpc-fa3aca9e
+  roles:
+    - ./

@@ -1,0 +1,15 @@
+---
+# defaults file for ansible-role-cloudwatch
+vpc_id: ""
+slave_instance_type: "m3.xlarge"
+public_slave_instance_type: "m3.xlarge"
+master_instance_type: "m3.xlarge"
+stack_creation_timeout: "PT45M"
+key_name: "" # Required: Specify your AWS EC2 Key Pair.
+master_instance_count: "" # Required: Specify the number of master nodes or accept the default
+public_slave_instance_count: "" # Required: Specify the number of public agent nodes or accept the default.
+slave_instance_count: "" # Required: Specify the number of private agent nodes or accept the default.
+admin_location: "" # Optional: Specify the IP range to whitelist for access to the admin zone. Must be a valid CIDR.
+region: us-west-2
+private_subnet: {}
+public_subnet: {}

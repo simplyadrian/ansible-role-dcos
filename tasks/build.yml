@@ -1,0 +1,29 @@
+---
+# tasks file for ansible-role-dcos
+- name: set dcos template location
+  set_fact:
+    dcos_tpl: "build/{{environ}}-dcos.json"
+  tags: [ 'build' ]
+
+- name: dcos template
+  template: src=dcos.json.j2 dest={{dcos_tpl}}
+  tags: [ 'build' ]
+
+- name: verify JSON
+  command: python -mjson.tool {{dcos_tpl}}
+  tags: [ 'build' ]
+  changed_when: false
+
+- name: create dcos stack
+  cloudformation:
+    template: "{{ dcos_tpl }}"
+    region: "{{ region }}"
+    stack_name: "{{ environ }}-dcos"
+    tags:
+      "mGage:env": "{{ environ }}"
+      "mGage:unit": "techops"
+      "mGage:product": "mesos"
+      "mGage:subproduct": "mesos-infrastructure"
+      "mGage:owner": "sysadmins@mGage.com"
+  register: dcos_stack
+- debug: var=dcos_stack.stack_outputs
