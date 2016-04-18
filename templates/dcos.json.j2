@@ -1277,7 +1277,7 @@
         "LaunchConfigurationName": {
           "Ref": "PublicSlaveLaunchConfig"
         },
-        "MinSize": "{{ public_slave_instance_count |default(1) }}",
+        "MinSize": "{{ public_slave_instance_count |default(1) }}"
       }
     },
     "ElasticLoadBalancer": {
