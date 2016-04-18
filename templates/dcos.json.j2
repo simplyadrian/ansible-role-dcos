@@ -1240,15 +1240,18 @@
         "Tags": [
           {
             "Key": "mGage:unit",
-            "Value": "techops"
+            "Value": "techops",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "mGage:product",
-            "Value": "mesos-slave"
+            "Value": "mesos-slave",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "mGage:env",
-            "Value": "{{ environ }}"
+            "Value": "{{ environ }}",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "Name",
@@ -1262,9 +1265,9 @@
                   "{{ environ }}"
                 ]
               ]
-            }
-          },
-          "PropagateAtLaunch": "true"
+            },
+            "PropagateAtLaunch": "true"
+          }
         ],
         "VPCZoneIdentifier": [
         "{{ public_subnet|list|join(',') }}"
@@ -1340,15 +1343,18 @@
         "Tags": [
           {
             "Key": "mGage:unit",
-            "Value": "techops"
+            "Value": "techops",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "mGage:product",
-            "Value": "mesos-slave"
+            "Value": "mesos-slave",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "mGage:env",
-            "Value": "{{ environ }}"
+            "Value": "{{ environ }}",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "Name",
@@ -1362,9 +1368,9 @@
                   "{{ environ }}"
                 ]
               ]
-            }
-          },
-          "PropagateAtLaunch": "true"
+            },
+            "PropagateAtLaunch": "true"
+          }
         ],
         "MaxSize": "{{ slave_instance_count }}",
         "DesiredCapacity": "{{ slave_instance_count |default(5) }}",
@@ -1527,15 +1533,18 @@
         "Tags": [
           {
             "Key": "mGage:unit",
-            "Value": "techops"
+            "Value": "techops",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "mGage:product",
-            "Value": "mesos-master"
+            "Value": "mesos-master",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "mGage:env",
-            "Value": "{{ environ }}"
+            "Value": "{{ environ }}",
+            "PropagateAtLaunch": "true"
           },
           {
             "Key": "Name",
@@ -1549,9 +1558,9 @@
                   "{{ environ }}"
                 ]
               ]
-            }
-          },
-          "PropagateAtLaunch": "true"
+            },
+            "PropagateAtLaunch": "true"
+          }
         ],
         "VPCZoneIdentifier": [
         "{{ public_subnet|list|join(',') }}"
