@@ -3,15 +3,12 @@
 - name: set dcos template location
   set_fact:
     dcos_tpl: "build/{{environ}}-dcos.json"
-  tags: [ 'build' ]
 
 - name: dcos template
   template: src=dcos.json.j2 dest={{dcos_tpl}}
-  tags: [ 'build' ]
 
 - name: verify JSON
   command: python -mjson.tool {{dcos_tpl}}
-  tags: [ 'build' ]
   changed_when: false
 
 # This is kind of gross, but there is apparently a bug in the ansible cfn
@@ -54,5 +51,20 @@
       "mGage:owner": "sysadmins@mGage.com"
   register: dcos_stack
   when: aws_session_token is defined
+
+- name: Create DCOS stack
+  cloudformation:
+    template_url: "{{ cfn_template_url }}"
+    region: "{{ region }}"
+    stack_name: "{{ environ }}-mgage-dcos"
+    tags:
+      "mGage:env": "{{ environ }}"
+      "mGage:ecosystem": "{{ vpc_parameters.Ecosystem }}"
+      "mGage:unit": "techops"
+      "mGage:product": "mesos"
+      "mGage:subproduct": "mesos-infrastructure"
+      "mGage:owner": "sysadmins@mGage.com"
+  register: vpc_stack
+  when: aws_session_token is not defined
 
 - debug: var=dcos_stack.stack_outputs
