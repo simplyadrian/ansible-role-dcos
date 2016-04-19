@@ -1,15 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Launching the Mesosphere DCOS cluster",
-  "Parameters": {
-    "AcceptEULA": {
-      "Description": "\nRequired: Read the Mesosphere EULA and indicate agreement: https://docs.mesosphere.com/community-edition-eula/.",
-      "Type": "String",
-      "AllowedValues": [
-        "Yes"
-      ]
-    }
-  },
   "Mappings": {
     "RegionToAmi": {
       "eu-west-1": {
@@ -1261,7 +1252,7 @@
                   {
                     "Ref": "AWS::StackName"
                   },
-                  "{{ environ }}"
+                  "public-slave"
                 ]
               ]
             },
@@ -1364,7 +1355,7 @@
                   {
                     "Ref": "AWS::StackName"
                   },
-                  "{{ environ }}"
+                  "slave"
                 ]
               ]
             },
@@ -1554,7 +1545,7 @@
                   {
                     "Ref": "AWS::StackName"
                   },
-                  "{{ environ }}"
+                  "master"
                 ]
               ]
             },

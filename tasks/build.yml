@@ -44,7 +44,7 @@
   cloudformation:
     template_url: "{{ cfn_template_url }}"
     region: "{{ region }}"
-    stack_name: "{{ environ }}-dcos"
+    stack_name: "{{ environ }}-mgage-dcos"
     security_token: "{{ aws_session_token }}"
     tags:
       "mGage:env": "{{ environ }}"
