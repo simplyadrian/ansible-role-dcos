@@ -11,38 +11,20 @@
   command: python -mjson.tool {{dcos_tpl}}
   changed_when: false
 
-# This is kind of gross, but there is apparently a bug in the ansible cfn
-# module that causes it to fail to look up the security token from env
-# variables. We can't omit, because it still tries to use security token
-# parameter for the module, even if it's empty. Thus, the tasks below need
-# to be duplicated and conditional.
-- name: set session token fact
-  set_fact:
-    aws_session_token: "{{ lookup('env','AWS_SESSION_TOKEN') }}"
-
 - name: Upload template to s3
   s3:
     bucket: "{{ cfn_template_bucket }}"
     src: "{{ dcos_tpl }}"
     object: "{{ environ }}/{{ dcos_tpl }}"
     mode: put
-    security_token: "{{ aws_session_token }}"
-  when: aws_session_token is defined
-
-- name: Upload template to s3
-  s3:
-    bucket: "{{ cfn_template_bucket }}"
-    src: "{{ dcos_tpl }}"
-    object: "{{ environ }}/{{dcos_tpl}}"
-    mode: put
-  when: aws_session_token is not defined
+    security_token: "{{ lookup('env','AWS_SESSION_TOKEN') }}"
 
 - name: Create DCOS stack
   cloudformation:
     template_url: "{{ cfn_template_url }}"
     region: "{{ region }}"
     stack_name: "{{ environ }}-mgage-dcos"
-    security_token: "{{ aws_session_token }}"
+    security_token: "{{ lookup('env','AWS_SESSION_TOKEN') }}"
     tags:
       "mGage:env": "{{ environ }}"
       "mGage:unit": "techops"
@@ -50,21 +32,5 @@
       "mGage:subproduct": "mesos-infrastructure"
       "mGage:owner": "sysadmins@mGage.com"
   register: dcos_stack
-  when: aws_session_token is defined
-
-- name: Create DCOS stack
-  cloudformation:
-    template_url: "{{ cfn_template_url }}"
-    region: "{{ region }}"
-    stack_name: "{{ environ }}-mgage-dcos"
-    tags:
-      "mGage:env": "{{ environ }}"
-      "mGage:ecosystem": "{{ vpc_parameters.Ecosystem }}"
-      "mGage:unit": "techops"
-      "mGage:product": "mesos"
-      "mGage:subproduct": "mesos-infrastructure"
-      "mGage:owner": "sysadmins@mGage.com"
-  register: vpc_stack
-  when: aws_session_token is not defined
 
 - debug: var=dcos_stack.stack_outputs
