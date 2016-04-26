@@ -10,6 +10,7 @@ master_instance_count: "" # Required: Specify the number of master nodes or acce
 public_slave_instance_count: "" # Required: Specify the number of public agent nodes or accept the default.
 slave_instance_count: "" # Required: Specify the number of private agent nodes or accept the default.
 admin_location: "" # Optional: Specify the IP range to whitelist for access to the admin zone. Must be a valid CIDR.
+oauthenabled: true
 region: us-west-2
 private_subnet: {}
 public_subnet: {}
