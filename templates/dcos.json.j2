@@ -387,6 +387,12 @@
           },
           {
             "IpProtocol": "tcp",
+            "ToPort": "80",
+            "FromPort": "80",
+            "CidrIp": "{{ admin_location }}"
+          },
+          {
+            "IpProtocol": "tcp",
             "ToPort": "443",
             "FromPort": "443",
             "CidrIp": "{{ admin_location }}"
@@ -1313,6 +1319,12 @@
           "Target": "HTTP:5050/health"
         },
         "Listeners": [
+          {
+            "Protocol": "HTTP",
+            "InstancePort": "80",
+            "LoadBalancerPort": "80",
+            "InstanceProtocol": "HTTP"
+          },
           {
             "Protocol": "HTTPS",
             "InstancePort": "443",
