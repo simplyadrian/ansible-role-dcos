@@ -387,12 +387,6 @@
           },
           {
             "IpProtocol": "tcp",
-            "ToPort": "80",
-            "FromPort": "80",
-            "CidrIp": "{{ admin_location }}"
-          },
-          {
-            "IpProtocol": "tcp",
             "ToPort": "443",
             "FromPort": "443",
             "CidrIp": "{{ admin_location }}"
@@ -1320,16 +1314,11 @@
         },
         "Listeners": [
           {
-            "Protocol": "HTTP",
-            "InstancePort": "80",
-            "LoadBalancerPort": "80",
-            "InstanceProtocol": "HTTP"
-          },
-          {
-            "Protocol": "TCP",
+            "Protocol": "HTTPS",
             "InstancePort": "443",
             "LoadBalancerPort": "443",
-            "InstanceProtocol": "TCP"
+            "InstanceProtocol": "HTTPS",
+            "SSLCertificateId": "{{ ssl_cert_arn }}"
           }
         ],
         "Subnets": [
