@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Launching the Mesosphere DCOS cluster",
+  "Description": "Launching the mGage {{ environ }} Mesosphere DCOS cluster",
   "Mappings": {
     "RegionToAmi": {
       "eu-west-1": {
@@ -40,7 +40,14 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Mesos Slaves Public",
-        "VpcId": "{{ vpc_id }}"
+        "VpcId": "{{ vpc_id }}",
+        "Tags": [
+          { "Key": "mGage:env",  "Value": "{{ environ }}" },
+          { "Key": "mGage:unit",  "Value": "techops"  },
+          { "Key": "mGage:product",  "Value": "Mesosphere"  },
+          { "Key": "mGage:subproduct",  "Value": "DCOS"  },
+          { "Key": "Name", "Value": "{{ environ }}-dcos-PublicSecurityGroup" }
+        ]
       }
     },
     "PublicSlaveIngressTwo": {
@@ -372,7 +379,14 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Mesos Master LB",
-        "VpcId": "{{ vpc_id }}"
+        "VpcId": "{{ vpc_id }}",
+        "Tags": [
+          { "Key": "mGage:env",  "Value": "{{ environ }}" },
+          { "Key": "mGage:unit",  "Value": "techops"  },
+          { "Key": "mGage:product",  "Value": "Mesosphere"  },
+          { "Key": "mGage:subproduct",  "Value": "DCOS"  },
+          { "Key": "Name", "Value": "{{ environ }}-dcos-LbSecurityGroup" }
+        ]
       }
     },
     "AdminSecurityGroup": {
@@ -399,7 +413,14 @@
           }
         ],
         "GroupDescription": "Enable admin access to servers",
-        "VpcId": "{{ vpc_id }}"
+        "VpcId": "{{ vpc_id }}",
+        "Tags": [
+          { "Key": "mGage:env",  "Value": "{{ environ }}" },
+          { "Key": "mGage:unit",  "Value": "techops"  },
+          { "Key": "mGage:product",  "Value": "Mesosphere"  },
+          { "Key": "mGage:subproduct",  "Value": "DCOS"  },
+          { "Key": "Name", "Value": "{{ environ }}-dcos-AdminSecurityGroup" }
+        ]
       }
     },
     "SlaveToSlaveIngress": {
@@ -1097,7 +1118,7 @@
         },
         "Policies": [
           {
-            "PolicyName": "Slaves",
+            "PolicyName": "{{ environ }}-DCOS-Slaves",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
@@ -1121,6 +1142,38 @@
                   ],
                   "Action": [
                     "cloudformation:*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Action": [
+                    "ec2:CreateNetworkInterface",
+                    "ec2:DeleteNetworkInterface",
+                    "ec2:Describe*",
+                    "ec2:ModifyNetworkInterfaceAttribute",
+                    "ecr:GetAuthorizationToken",
+                    "elasticfilesystem:*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:ecr:{{ region }}:{{ aws_account_number }}:repository/awscli",
+                    "arn:aws:ecr:{{ region }}:{{ aws_account_number }}:repository/dcos-cli",
+                    "arn:aws:ecr:{{ region }}:{{ aws_account_number }}:repository/{% if custom_ecr_repo is defined %}{{ custom_ecr_repo }}{% else %}jenkins{% endif %}"
+                  ],
+                  "Action": [
+                    "ecr:GetRepositoryPolicy",
+                    "ecr:DescribeRepositories",
+                    "ecr:ListImages",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:PutImage",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart",
+                    "ecr:CompleteLayerUpload"
                   ]
                 }
               ]
@@ -1181,40 +1234,41 @@
         },
         "Listeners": [
           {
-            "Protocol": "HTTP",
-            "InstancePort": "5050",
+            "InstanceProtocol": "HTTP",
             "LoadBalancerPort": "5050",
-            "InstanceProtocol": "HTTP"
+            "InstancePort": "5050",
+            "Protocol": "HTTP"
           },
           {
-            "Protocol": "TCP",
-            "InstancePort": "2181",
+            "InstanceProtocol": "TCP",
             "LoadBalancerPort": "2181",
-            "InstanceProtocol": "TCP"
+            "InstancePort": "2181",
+            "Protocol": "TCP"
           },
           {
-            "Protocol": "HTTP",
-            "InstancePort": "8181",
+            "InstanceProtocol": "HTTP",
             "LoadBalancerPort": "8181",
-            "InstanceProtocol": "HTTP"
+            "InstancePort": "8181",
+            "Protocol": "HTTP"
           },
           {
-            "Protocol": "HTTP",
-            "InstancePort": "80",
+            "InstanceProtocol": "HTTP",
             "LoadBalancerPort": "80",
-            "InstanceProtocol": "HTTP"
+            "InstancePort": "80",
+            "Protocol": "HTTP"
           },
           {
-            "Protocol": "TCP",
-            "InstancePort": "443",
+            "InstanceProtocol": "HTTPS",
             "LoadBalancerPort": "443",
-            "InstanceProtocol": "TCP"
+            "InstancePort": "443",
+            "Protocol": "HTTPS",
+            "SSLCertificateId": "{{ ssl_cert_arn }}"
           },
           {
-            "Protocol": "HTTP",
-            "InstancePort": "8080",
+            "InstanceProtocol": "HTTP",
             "LoadBalancerPort": "8080",
-            "InstanceProtocol": "HTTP"
+            "InstancePort": "8080",
+            "Protocol": "HTTP"
           }
         ],
         "Subnets": [
@@ -1292,53 +1346,12 @@
           {% if not loop.last %},{% endif -%}
         {% endfor -%}
         ],
-        "MaxSize": "{{ public_slave_instance_count |default(1) }}",
+        "MaxSize": "{{ public_slave_max_instance_count |default(1) }}",
         "DesiredCapacity": "{{ public_slave_instance_count |default(1) }}",
         "LaunchConfigurationName": {
           "Ref": "PublicSlaveLaunchConfig"
         },
         "MinSize": "{{ public_slave_instance_count |default(1) }}"
-      }
-    },
-    "ElasticLoadBalancer": {
-      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-      "Properties": {
-        "SecurityGroups": [
-          {
-            "Ref": "LbSecurityGroup"
-          },
-          {
-            "Ref": "AdminSecurityGroup"
-          }
-        ],
-        "HealthCheck": {
-          "Interval": "30",
-          "Timeout": "5",
-          "HealthyThreshold": "2",
-          "UnhealthyThreshold": "2",
-          "Target": "HTTP:5050/health"
-        },
-        "Listeners": [
-          {
-            "Protocol": "HTTP",
-            "InstancePort": "80",
-            "LoadBalancerPort": "80",
-            "InstanceProtocol": "HTTP"
-          },
-          {
-            "Protocol": "HTTPS",
-            "InstancePort": "443",
-            "LoadBalancerPort": "443",
-            "InstanceProtocol": "HTTPS",
-            "SSLCertificateId": "{{ ssl_cert_arn }}"
-          }
-        ],
-        "Subnets": [
-        {% for subnet in public_subnet -%}
-          "{{ subnet }}"
-          {% if not loop.last %},{% endif -%}
-        {% endfor -%}
-        ]
       }
     },
     "MasterInstanceProfile": {
@@ -1396,7 +1409,7 @@
             "PropagateAtLaunch": "true"
           }
         ],
-        "MaxSize": "{{ slave_instance_count }}",
+        "MaxSize": "{{ slave_max_instance_count }}",
         "DesiredCapacity": "{{ slave_instance_count |default(5) }}",
         "LaunchConfigurationName": {
           "Ref": "SlaveLaunchConfig"
@@ -1443,6 +1456,7 @@
             "InstancePort": "443",
             "LoadBalancerPort": "443",
             "InstanceProtocol": "TCP"
+
           }
         ],
         "Subnets": [
@@ -1499,7 +1513,14 @@
           }
         ],
         "GroupDescription": "Mesos Masters",
-        "VpcId": "{{ vpc_id }}"
+        "VpcId": "{{ vpc_id }}",
+        "Tags": [
+          { "Key": "mGage:env",  "Value": "{{ environ }}" },
+          { "Key": "mGage:unit",  "Value": "techops"  },
+          { "Key": "mGage:product",  "Value": "Mesosphere"  },
+          { "Key": "mGage:subproduct",  "Value": "DCOS"  },
+          { "Key": "Name", "Value": "{{ environ }}-dcos-MasterSecurityGroup" }
+        ]
       }
     },
     "PublicSlaveToPublicSlaveIngress": {
@@ -1551,9 +1572,6 @@
       "Properties": {
         "LoadBalancerNames": [
           {
-            "Ref": "ElasticLoadBalancer"
-          },
-          {
             "Ref": "InternalMasterLoadBalancer"
           }
         ],
@@ -1595,7 +1613,7 @@
           {% if not loop.last %},{% endif -%}
         {% endfor -%}
         ],
-        "MaxSize": "{{ master_instance_count | default(3) }}",
+        "MaxSize": "{{ master_max_instance_count | default(3) }}",
         "DesiredCapacity": "{{ master_instance_count | default(3) }}",
         "LaunchConfigurationName": {
           "Ref": "MasterLaunchConfig"
@@ -1653,7 +1671,7 @@
         "Path": "/",
         "Policies": [
           {
-            "PolicyName": "root",
+            "PolicyName": "{{ environ }}-DCOS-Masters",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
@@ -1726,11 +1744,37 @@
                   "Action": [
                     "ec2:DescribeKeyPairs",
                     "ec2:DescribeSubnets",
+                    "ec2:CreateNetworkInterface",
+                    "ec2:DeleteNetworkInterface",
+                    "ec2:Describe*",
+                    "ec2:ModifyNetworkInterfaceAttribute",
                     "autoscaling:DescribeLaunchConfigurations",
                     "autoscaling:UpdateAutoScalingGroup",
                     "autoscaling:DescribeAutoScalingGroups",
                     "autoscaling:DescribeScalingActivities",
-                    "elasticloadbalancing:DescribeLoadBalancers"
+                    "elasticloadbalancing:DescribeLoadBalancers",
+                    "ecr:GetAuthorizationToken",
+                    "elasticfilesystem:*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:ecr:{{ region }}:{{ aws_account_number }}:repository/awscli",
+                    "arn:aws:ecr:{{ region }}:{{ aws_account_number }}:repository/dcos-cli",
+                    "arn:aws:ecr:{{ region }}:{{ aws_account_number }}:repository/{% if custom_ecr_repo is defined %}{{ custom_ecr_repo }}{% else %}jenkins{% endif %}"
+                  ],
+                  "Action": [
+                    "ecr:GetRepositoryPolicy",
+                    "ecr:DescribeRepositories",
+                    "ecr:ListImages",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:PutImage",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart",
+                    "ecr:CompleteLayerUpload"
                   ]
                 }
               ]
@@ -1755,12 +1799,19 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Mesos Slaves",
-        "VpcId": "{{ vpc_id }}"
+        "VpcId": "{{ vpc_id }}",
+        "Tags": [
+          { "Key": "mGage:env",  "Value": "{{ environ }}" },
+          { "Key": "mGage:unit",  "Value": "techops"  },
+          { "Key": "mGage:product",  "Value": "Mesosphere"  },
+          { "Key": "mGage:subproduct",  "Value": "DCOS"  },
+          { "Key": "Name", "Value": "{{ environ }}-dcos-SlaveSecurityGroup" }
+        ]
       }
     },
     "ExhibitorS3Bucket": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy" : "Delete"
     },
     "MasterToPublicSlaveIngress": {
       "Type": "AWS::EC2::SecurityGroupIngress",
@@ -1810,7 +1861,7 @@
       "Description": "Mesos Master",
       "Value": {
         "Fn::GetAtt": [
-          "ElasticLoadBalancer",
+          "InternalMasterLoadBalancer",
           "DNSName"
         ]
       }

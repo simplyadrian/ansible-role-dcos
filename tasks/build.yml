@@ -28,8 +28,8 @@
     tags:
       "mGage:env": "{{ environ }}"
       "mGage:unit": "techops"
-      "mGage:product": "mesos"
-      "mGage:subproduct": "mesos-infrastructure"
+      "mGage:product": "Mesosphere"
+      "mGage:subproduct": "DCOS"
       "mGage:owner": "sysadmins@mGage.com"
   register: dcos_stack
 
