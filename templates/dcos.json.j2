@@ -513,26 +513,26 @@
       "Properties" : {
         "AdjustmentType" : "ChangeInCapacity",
         "AutoScalingGroupName" : { "Ref" : "PublicSlaveServerGroup" },
-        "Cooldown" : "1",
-        "ScalingAdjustment" : "1"
+        "Cooldown" : "{{ publicslave_cooldown }}",
+        "ScalingAdjustment" : "{{ publicslave_scaling_adjustment }}"
       }
     },
     "PublicSlaveCPUAlarmHigh": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "EvaluationPeriods": "1",
-        "Statistic": "Average",
-        "Threshold": "80",
-        "AlarmDescription": "Alarm if CPU too high or metric disappears indicating instance is down",
-        "Period": "60",
+        "EvaluationPeriods": "{{ publicslave_evaluation_period }}",
+        "Statistic": "{{ publicslave_statistic_type }}",
+        "Threshold": "{{ publicslave_threshold }}",
+        "AlarmDescription": "{{ publicslave_alarm_description }}",
+        "Period": "{{ publicslave_period }}",
         "AlarmActions": [ { "Ref": "PublicSlaveScaleUpPolicy" } ],
         "Namespace": "AWS/EC2",
         "Dimensions": [ {
            "Name": "AutoScalingGroupName",
            "Value": { "Ref": "PublicSlaveServerGroup" }
         } ],
-        "ComparisonOperator": "GreaterThanThreshold",
-        "MetricName": "CPUUtilization"
+        "ComparisonOperator": "{{ publicslave_comparison_operator }}",
+        "MetricName": "{{ publicslave_metric_name }}"
       }
     },
     "MasterInstanceProfile": {
@@ -603,26 +603,26 @@
       "Properties" : {
         "AdjustmentType" : "ChangeInCapacity",
         "AutoScalingGroupName" : { "Ref" : "SlaveServerGroup" },
-        "Cooldown" : "1",
-        "ScalingAdjustment" : "1"
+        "Cooldown" : "{{ slave_cooldown }}",
+        "ScalingAdjustment" : "{{ slave_scaling_adjustment }}"
       }
     },
     "SlaveCPUAlarmHigh": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "EvaluationPeriods": "1",
-        "Statistic": "Average",
-        "Threshold": "80",
-        "AlarmDescription": "Alarm if CPU too high or metric disappears indicating instance is down",
-        "Period": "60",
+        "EvaluationPeriods": "{{ slave_evaluation_period }}",
+        "Statistic": "{{ slave_statistic_type }}",
+        "Threshold": "{{ slave_threshold }}",
+        "AlarmDescription": "{{ slave_alarm_description }}",
+        "Period": "{{ slave_period }}",
         "AlarmActions": [ { "Ref": "SlaveScaleUpPolicy" } ],
         "Namespace": "AWS/EC2",
         "Dimensions": [ {
            "Name": "AutoScalingGroupName",
            "Value": { "Ref": "SlaveServerGroup" }
         } ],
-        "ComparisonOperator": "GreaterThanThreshold",
-        "MetricName": "CPUUtilization"
+        "ComparisonOperator": "{{ slave_comparison_operator }}",
+        "MetricName": "{{ slave_metric_name }}"
       }
     },
     "PublicSlaveIngressFour": {
@@ -834,26 +834,26 @@
       "Properties" : {
         "AdjustmentType" : "ChangeInCapacity",
         "AutoScalingGroupName" : { "Ref" : "MasterServerGroup" },
-        "Cooldown" : "1",
-        "ScalingAdjustment" : "1"
+        "Cooldown" : "{{ master_cooldown }}",
+        "ScalingAdjustment" : "{{ master_scaling_adjustment }}"
       }
     },
     "MasterCPUAlarmHigh": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "EvaluationPeriods": "1",
-        "Statistic": "Average",
-        "Threshold": "80",
-        "AlarmDescription": "Alarm if CPU too high or metric disappears indicating instance is down",
-        "Period": "60",
+        "EvaluationPeriods": "{{ master_evaluation_period }}",
+        "Statistic": "{{ master_statistic_type }}",
+        "Threshold": "{{ master_threshold }}",
+        "AlarmDescription": "{{ master_alarm_description }}",
+        "Period": "{{ master_period }}",
         "AlarmActions": [ { "Ref": "MasterScaleUpPolicy" } ],
         "Namespace": "AWS/EC2",
         "Dimensions": [ {
            "Name": "AutoScalingGroupName",
            "Value": { "Ref": "MasterServerGroup" }
         } ],
-        "ComparisonOperator": "GreaterThanThreshold",
-        "MetricName": "CPUUtilization"
+        "ComparisonOperator": "{{ master_comparison_operator }}",
+        "MetricName": "{{ master_metric_name }}"
       }
     },
     "PublicSlaveToSlaveIngress": {
