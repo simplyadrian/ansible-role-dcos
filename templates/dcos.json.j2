@@ -508,6 +508,33 @@
         "MinSize": "{{ public_slave_instance_count |default(1) }}"
       }
     },
+    "PublicSlaveScaleUpPolicy" : {
+      "Type" : "AWS::AutoScaling::ScalingPolicy",
+      "Properties" : {
+        "AdjustmentType" : "ChangeInCapacity",
+        "AutoScalingGroupName" : { "Ref" : "PublicSlaveServerGroup" },
+        "Cooldown" : "1",
+        "ScalingAdjustment" : "1"
+      }
+    },
+    "PublicSlaveCPUAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": "1",
+        "Statistic": "Average",
+        "Threshold": "80",
+        "AlarmDescription": "Alarm if CPU too high or metric disappears indicating instance is down",
+        "Period": "60",
+        "AlarmActions": [ { "Ref": "PublicSlaveScaleUpPolicy" } ],
+        "Namespace": "AWS/EC2",
+        "Dimensions": [ {
+           "Name": "AutoScalingGroupName",
+           "Value": { "Ref": "PublicSlaveServerGroup" }
+        } ],
+        "ComparisonOperator": "GreaterThanThreshold",
+        "MetricName": "CPUUtilization"
+      }
+    },
     "MasterInstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
@@ -569,6 +596,33 @@
           "Ref": "SlaveLaunchConfig"
         },
         "MinSize": "{{ slave_instance_count |default(5) }}"
+      }
+    },
+    "SlaveScaleUpPolicy" : {
+      "Type" : "AWS::AutoScaling::ScalingPolicy",
+      "Properties" : {
+        "AdjustmentType" : "ChangeInCapacity",
+        "AutoScalingGroupName" : { "Ref" : "SlaveServerGroup" },
+        "Cooldown" : "1",
+        "ScalingAdjustment" : "1"
+      }
+    },
+    "SlaveCPUAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": "1",
+        "Statistic": "Average",
+        "Threshold": "80",
+        "AlarmDescription": "Alarm if CPU too high or metric disappears indicating instance is down",
+        "Period": "60",
+        "AlarmActions": [ { "Ref": "SlaveScaleUpPolicy" } ],
+        "Namespace": "AWS/EC2",
+        "Dimensions": [ {
+           "Name": "AutoScalingGroupName",
+           "Value": { "Ref": "SlaveServerGroup" }
+        } ],
+        "ComparisonOperator": "GreaterThanThreshold",
+        "MetricName": "CPUUtilization"
       }
     },
     "PublicSlaveIngressFour": {
@@ -773,6 +827,33 @@
           "Ref": "MasterLaunchConfig"
         },
         "MinSize": "{{ master_instance_count | default(3) }}"
+      }
+    },
+    "MasterScaleUpPolicy" : {
+      "Type" : "AWS::AutoScaling::ScalingPolicy",
+      "Properties" : {
+        "AdjustmentType" : "ChangeInCapacity",
+        "AutoScalingGroupName" : { "Ref" : "MasterServerGroup" },
+        "Cooldown" : "1",
+        "ScalingAdjustment" : "1"
+      }
+    },
+    "MasterCPUAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": "1",
+        "Statistic": "Average",
+        "Threshold": "80",
+        "AlarmDescription": "Alarm if CPU too high or metric disappears indicating instance is down",
+        "Period": "60",
+        "AlarmActions": [ { "Ref": "MasterScaleUpPolicy" } ],
+        "Namespace": "AWS/EC2",
+        "Dimensions": [ {
+           "Name": "AutoScalingGroupName",
+           "Value": { "Ref": "MasterServerGroup" }
+        } ],
+        "ComparisonOperator": "GreaterThanThreshold",
+        "MetricName": "CPUUtilization"
       }
     },
     "PublicSlaveToSlaveIngress": {
