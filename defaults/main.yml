@@ -15,3 +15,36 @@ region: us-west-2
 private_subnet: {}
 public_subnet: {}
 cfn_template_url: "https://s3.amazonaws.com/{{ cfn_template_bucket }}/{{ environ }}/{{dcos_tpl}}"
+
+# master cloudwatch-alarms
+master_alarm_description: "Alarm if CPU too high or metric disappears indicating instance is down"
+master_cooldown: 1
+master_scaling_adjustment: 1
+master_evaluation_period: 1
+master_statistic_type: "Average"
+master_threshold: 80
+master_period: 60
+master_comparison_operator: "GreaterThanThreshold"
+master_metric_name: "CPUUtilization"
+
+# publicslave cloudwatch-alarms
+publicslave_alarm_description: "Alarm if CPU too high or metric disappears indicating instance is down"
+publicslave_cooldown: 1
+publicslave_scaling_adjustment: 1
+publicslave_evaluation_period: 1
+publicslave_statistic_type: "Average"
+publicslave_threshold: 80
+publicslave_period: 60
+publicslave_comparison_operator: "GreaterThanThreshold"
+publicslave_metric_name: "CPUUtilization"
+
+# slave cloudwatch-alarms
+slave_alarm_description: "Alarm if CPU too high or metric disappears indicating instance is down"
+slave_cooldown: 1
+slave_scaling_adjustment: 1
+slave_evaluation_period: 1
+slave_statistic_type: "Average"
+slave_threshold: 80
+slave_period: 60
+slave_comparison_operator: "GreaterThanThreshold"
+slave_metric_name: "CPUUtilization"
