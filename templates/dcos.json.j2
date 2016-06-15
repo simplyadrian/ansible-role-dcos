@@ -546,6 +546,46 @@
         "Path": "/"
       }
     },
+    "SlaveLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "SecurityGroups": [
+          {
+            "Ref": "SlaveSecurityGroup"
+          }
+        ],
+        "HealthCheck": {
+          "Interval": "30",
+          "Timeout": "5",
+          "HealthyThreshold": "2",
+          "UnhealthyThreshold": "2",
+          "Target": "HTTP:80/"
+        },
+        "Listeners": [
+          {
+            "Protocol": "HTTP",
+            "InstancePort": "80",
+            "LoadBalancerPort": "80",
+            "InstanceProtocol": "HTTP"
+          },
+          {
+            "Protocol": "TCP",
+            "InstancePort": "443",
+            "LoadBalancerPort": "443",
+            "InstanceProtocol": "TCP"
+            "SSLCertificateId": "{{ ssl_cert_arn }}"
+
+          }
+        ],
+        "Subnets": [
+        {% for subnet in private_subnet -%}
+          "{{ subnet }}"
+          {% if not loop.last %},{% endif -%}
+        {% endfor -%}
+        ]
+        "Scheme": "internal"
+      }
+    },
     "SlaveServerGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "CreationPolicy": {
@@ -555,6 +595,11 @@
         }
       },
       "Properties": {
+        "LoadBalancerNames": [
+          {
+            "Ref": "SlaveLoadBalancer"
+          }
+        ],
         "VPCZoneIdentifier": [
           "{{ private_subnet|list|join(',') }}"
         ],
