@@ -279,29 +279,8 @@
                 {
                   "Effect": "Allow",
                   "Resource": [
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:s3:::",
-                          {
-                            "Ref": "mgage-docker-config"
-                          },
-                          "/*"
-                        ]
-                      ]
-                    },
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:s3:::",
-                          {
-                            "Ref": "mgage-docker-config"
-                          }
-                        ]
-                      ]
-                    }
+                    "arn:aws:s3:::mgage-docker-config",
+                    "arn:aws:s3:::mgage-docker-config/*"
                   ],
                   "Action": [
                     "s3:AbortMultipartUpload",
@@ -999,6 +978,8 @@
                 {
                   "Effect": "Allow",
                   "Resource": [
+                    "arn:aws:s3:::mgage-docker-config",
+                    "arn:aws:s3:::mgage-docker-config/*",
                     {
                       "Fn::Join": [
                         "",
@@ -1018,29 +999,6 @@
                           "arn:aws:s3:::",
                           {
                             "Ref": "ExhibitorS3Bucket"
-                          }
-                        ]
-                      ]
-                    },
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:s3:::",
-                          {
-                            "Ref": "mgage-docker-config"
-                          },
-                          "/*"
-                        ]
-                      ]
-                    },
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:s3:::",
-                          {
-                            "Ref": "mgage-docker-config"
                           }
                         ]
                       ]
